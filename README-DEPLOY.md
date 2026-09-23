@@ -30,10 +30,11 @@ Sigue estos pasos para desplegar el proyecto desde cero en tus propias cuentas d
 1. Crea una cuenta en [Vercel](https://vercel.com/) y vincula tu cuenta de GitHub, GitLab o Bitbucket.
 2. Sube el código de este proyecto a un repositorio en tu cuenta de GitHub/GitLab.
 3. En Vercel, haz clic en **Add New -> Project** e importa tu repositorio.
-4. En la sección de **Environment Variables** (Variables de entorno) de la configuración de despliegue en Vercel, agrega las mismas variables que configuraste en tu archivo `.env`:
+4. En **Project Settings -> General**, establece **Root Directory** en `app-huevos`.
+5. En la sección de **Environment Variables** (Variables de entorno) de la configuración de despliegue en Vercel, agrega las mismas variables que configuraste en tu archivo `.env`:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-5. Haz clic en **Deploy**. Vercel construirá y desplegará automáticamente la aplicación.
+6. Haz clic en **Deploy**. Vercel construirá y desplegará automáticamente la aplicación.
 
 ## 4. Primer Acceso
 
