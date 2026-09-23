@@ -1,0 +1,9 @@
+
+Primero que nada quiero que se genere una pestaña nueva donde pueda crear usuarios con permisos para cobranzas, ventas, aplicar pagos en cc, etc.
+Despues sigue con estos pasos:
+1-  que en la pestaña de resumen sesten visibles las ventas del dia, ventas del dia anterior, acumulado de la semana y acumulado del mes. Lo mismo con las cantidades vendidas de cada dia. Total de gastos acumulados del mes.
+En productos mas vendidos, ranking de la semana y del mes en curso. Y en zonas las ventas y cantidades acumuladas de cada zona.
+
+2-En la pestaña de estadisticas quiero que este visible el acumulado del mes versus el acumulado al mismo dia del mes anterior. Y las variaciones con los meses anteriores. En ventas $, gastos, cantidades.
+3- En la pestaña de reparto quiero que si quedaron pedidos pendientes de entregas esten con una opcion para visualizar. Y los dias que ya tengan pedidos para entregar que se los pueda seleccionar para visualizar tambien.
+4- En la pestaña de cobranzas quiero que se visualize de mas nuevos a antiguas todas las cobranzas, en distintas paginas o filtrando, lo que sea mas optimo, y tiene que contener: Cliente, fecha, medio de pago, cobrador (con los nuevos perfiles que te pedi al principio), monto.

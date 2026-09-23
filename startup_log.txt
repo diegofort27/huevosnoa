@@ -1,0 +1,563 @@
+[mi� 11/02/2026 11:57:33,31] Starting App... 
+[mi� 11/02/2026 11:57:33,31] Killing process 2452 on port 3000... 
+Correcto: se termin� el proceso con PID 2452.
+[mi� 11/02/2026 11:57:33,31] Killing process 2452 on port 3000... 
+Error: no se pudo terminar el proceso con PID 2452.
+Motivo: No hay ninguna instancia activa de la tarea.
+
+> app-huevos@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.1.6
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.100.17:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 4.2s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1183ms (130 modules)
+ ○ Compiling /[locale]/login ...
+ ✓ Compiled /[locale]/login in 13.6s (1079 modules)
+(node:10956) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ POST /es/login 200 in 18443ms
+ ○ Compiling /[locale]/overview ...
+ ✓ Compiled /[locale]/overview in 4.4s (1123 modules)
+ GET /es/overview 200 in 6315ms
+ GET /es/login 200 in 115ms
+ POST /es/login 200 in 1486ms
+ GET /es/overview 200 in 92ms
+ GET /es/overview 200 in 77ms
+ GET /es/login 200 in 68ms
+ POST /es/login 200 in 637ms
+ POST /es/login 200 in 1310ms
+ POST /es/login 200 in 706ms
+ POST /es/login 200 in 393ms
+ POST /es/login 200 in 725ms
+ ✓ Compiled in 633ms (441 modules)
+ ✓ Compiled in 648ms (441 modules)
+ ○ Compiling /[locale]/login ...
+ ✓ Compiled /[locale]/login in 1745ms (654 modules)
+ GET /es/login 200 in 3267ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1338ms (669 modules)
+ GET /favicon.ico 200 in 1888ms
+ GET /favicon.ico 200 in 47ms
+ ○ Compiling /[locale]/overview ...
+ ✓ Compiled /[locale]/overview in 665ms (697 modules)
+ GET /es/overview 200 in 1358ms
+ ○ Compiling /[locale]/insights ...
+ ✓ Compiled /[locale]/insights in 3.3s (1145 modules)
+ GET /es/insights 200 in 4960ms
+ GET /es/insights 200 in 137ms
+ GET /es/insights 200 in 218ms
+ ○ Compiling /[locale]/clientes ...
+ ✓ Compiled /[locale]/clientes in 1845ms (1144 modules)
+ GET /es/clientes 200 in 3514ms
+ GET /es/clientes 200 in 87ms
+ ○ Compiling /[locale]/reparto ...
+ ✓ Compiled /[locale]/reparto in 2.3s (1136 modules)
+ GET /es/reparto 200 in 4088ms
+ ○ Compiling /[locale]/productos ...
+ ✓ Compiled /[locale]/productos in 1455ms (1143 modules)
+ GET /es/productos 200 in 3127ms
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+ GET /es/login 200 in 347ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1592ms (719 modules)
+ GET /favicon.ico 200 in 1882ms
+ POST /es/login 200 in 990ms
+ GET /es/overview 200 in 165ms
+ GET /es/overview 200 in 110ms
+ GET /es/login 200 in 39ms
+ POST /es/login 200 in 1531ms
+ GET /es/overview 200 in 38ms
+ GET /es/login 200 in 34ms
+ POST /es/login 200 in 2557ms
+ GET /es/overview 200 in 99ms
+ GET /es/login 200 in 36ms
+ POST /es/login 200 in 1752ms
+ POST /es/login 200 in 883ms
+ GET /es/overview 200 in 84ms
+ GET /es/overview 200 in 76ms
+ GET /es/overview 200 in 282ms
+ GET /es/insights 200 in 108ms
+ GET /es/clientes 200 in 387ms
+ GET /es/productos 200 in 181ms
+ GET /es/reparto 200 in 148ms
+ GET /es/login 200 in 423ms
+ GET /favicon.ico 200 in 135ms
+ POST /es/login 200 in 1271ms
+ GET /es/overview 200 in 53ms
+ GET /es/login 200 in 49ms
+ POST /es/login 200 in 2037ms
+ GET /es/overview 200 in 82ms
+ GET /es/overview 200 in 54ms
+ GET /es/login 200 in 66ms
+ GET /es/login 200 in 163ms
+ GET /favicon.ico 200 in 86ms
+ GET /favicon.ico 200 in 52ms
+ GET /es/login 200 in 332ms
+ GET /favicon.ico 200 in 77ms
+ GET /favicon.ico 200 in 25ms
+ POST /es/login 200 in 3796ms
+ GET /es/overview 200 in 69ms
+ GET /es/login 200 in 60ms
+ ✓ Compiled in 2.4s (1152 modules)
+ GET /es/login 200 in 346ms
+ GET /es/login 200 in 696ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1431ms (714 modules)
+ GET /favicon.ico 200 in 1925ms
+ POST /es/login 200 in 1684ms
+ GET /es/login 200 in 293ms
+ GET /favicon.ico 200 in 70ms
+ POST /es/login 200 in 1526ms
+ GET /es/login 200 in 247ms
+ GET /favicon.ico 200 in 116ms
+ GET /es/login 200 in 172ms
+ GET /favicon.ico 200 in 74ms
+ POST /es/login 200 in 4673ms
+ ✓ Compiled in 1648ms (1152 modules)
+ GET /es/login 200 in 529ms
+ ○ Compiling /[locale] ...
+ ✓ Compiled /[locale] in 4.2s (1157 modules)
+ GET /es/login 200 in 198ms
+ GET /es 200 in 5703ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1275ms (718 modules)
+ GET /favicon.ico 200 in 1816ms
+ GET /es/overview 200 in 460ms
+ GET /es/overview 200 in 128ms
+ GET /es/clientes 200 in 115ms
+ ○ Compiling /[locale]/productos ...
+ ✓ Compiled /[locale]/productos in 2.8s (704 modules)
+ GET /es/productos 200 in 3590ms
+ GET /es/productos 200 in 53ms
+ ○ Compiling /[locale]/precios ...
+ ✓ Compiled /[locale]/precios in 3.7s (1095 modules)
+ GET /es/precios 200 in 5554ms
+ GET /es/precios 200 in 87ms
+ GET /es/precios 200 in 44ms
+ ✓ Compiled in 2s (1089 modules)
+ GET /es/precios 200 in 294ms
+ ○ Compiling /[locale]/ventas ...
+ ✓ Compiled /[locale]/ventas in 7.4s (1096 modules)
+ GET /es/precios 200 in 2188ms
+ GET /es/precios 200 in 61ms
+ GET /es/ventas 200 in 9265ms
+ ○ Compiling /[locale]/settings ...
+ ✓ Compiled /[locale]/settings in 3.6s (1098 modules)
+ GET /es/settings 200 in 4901ms
+ GET /es/settings 200 in 42ms
+ ✓ Compiled in 1004ms (1092 modules)
+ GET /es/settings 200 in 167ms
+ GET /es/precios 200 in 125ms
+ GET /es/precios 200 in 80ms
+ ○ Compiling /[locale] ...
+ ✓ Compiled /[locale] in 2.5s (636 modules)
+ GET /es 200 in 1546ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1686ms (651 modules)
+ GET /favicon.ico 200 in 2210ms
+ ○ Compiling /[locale]/overview ...
+ ✓ Compiled /[locale]/overview in 2.1s (658 modules)
+ GET /es/overview 200 in 2743ms
+ GET /es/overview 200 in 106ms
+ GET /es/precios 200 in 107ms
+ GET /es/reparto 200 in 120ms
+ GET /es/reparto 200 in 77ms
+ GET /es/productos 200 in 116ms
+ ✓ Compiled in 2.1s (1093 modules)
+ GET /es/productos 200 in 368ms
+ ✓ Compiled in 2.2s (1093 modules)
+ GET /es/productos 200 in 289ms
+ ✓ Compiled in 729ms (460 modules)
+ GET /es/productos 200 in 58ms
+ ✓ Compiled in 243ms (460 modules)
+ GET /es/productos 200 in 53ms
+ GET /es 200 in 531ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 2.2s (648 modules)
+ GET /favicon.ico 200 in 2767ms
+ GET /es/overview 200 in 354ms
+ GET /es/overview 200 in 101ms
+ ○ Compiling /[locale]/insights ...
+ ✓ Compiled /[locale]/insights in 1576ms (653 modules)
+ GET /es/insights 200 in 2081ms
+ ○ Compiling /[locale]/clientes ...
+ ✓ Compiled /[locale]/clientes in 884ms (658 modules)
+ GET /es/clientes 200 in 1252ms
+ ○ Compiling /[locale]/zonas ...
+ ✓ Compiled /[locale]/zonas in 2.7s (1120 modules)
+ GET /es/zonas 200 in 4161ms
+ GET /es/zonas 200 in 93ms
+ GET /es/reparto 200 in 110ms
+ ✓ Compiled in 1464ms (1095 modules)
+ GET /es/reparto 200 in 364ms
+ ✓ Compiled in 1933ms (1095 modules)
+ GET /es/reparto 200 in 325ms
+ GET /es/reparto 200 in 69ms
+ GET /es/zonas 200 in 85ms
+
+Could not open api.js in the editor.
+
+When running on Windows, file names are checked against an access list to protect against remote code execution attacks. File names may consist only of alphanumeric characters (all languages), periods, dashes, slashes, and underscores.
+
+ ✓ Compiled in 1819ms (1095 modules)
+ GET /es/zonas 200 in 185ms
+ ○ Compiling /[locale]/login ...
+ ✓ Compiled /[locale]/login in 4.7s (703 modules)
+ GET /es/login 200 in 5887ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1537ms (718 modules)
+ GET /favicon.ico 200 in 2060ms
+ POST /es/login 200 in 2134ms
+ POST /es/login 200 in 876ms
+ POST /es/login 200 in 1106ms
+ POST /es/login 200 in 869ms
+ GET /es/login 200 in 497ms
+ GET /favicon.ico 200 in 62ms
+ POST /es/login 200 in 3250ms
+ POST /es/login 200 in 1788ms
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[TypeError: fetch failed] {
+  [cause]: [Error: getaddrinfo ENOTFOUND gnpnadvhlngenjmirhuu.supabase.co] {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'gnpnadvhlngenjmirhuu.supabase.co'
+  }
+}
+[mar 28/04/2026 23:02:49,78] Starting App... 
+
+> app-huevos@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.1.6
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.195:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 4.4s
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of c:\Users\gomez\Documents\antigravity\app huevos\app-huevos\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1459ms (130 modules)
+ ○ Compiling /[locale]/login ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of c:\Users\gomez\Documents\antigravity\app huevos\app-huevos\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ ✓ Compiled /[locale]/login in 8.1s (1032 modules)
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of c:\Users\gomez\Documents\antigravity\app huevos\app-huevos\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ GET /es/login 200 in 10360ms
+ ○ Compiling /favicon.ico ...
+[?25h
+[jue 30/04/2026 12:31:14,77] Starting App... 
+[jue 30/04/2026 12:31:14,80] Killing process 6820 on port 3000... 
+Correcto: se termin� el proceso con PID 6820.
+[jue 30/04/2026 12:31:14,80] Killing process 6820 on port 3000... 
+ERROR: no se encontr� el proceso "6820".
+
+> app-huevos@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.1.6
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.111.124:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 8.6s
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of c:\Users\gomez\Documents\antigravity\app huevos\app-huevos\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 4.9s (130 modules)
+ ○ Compiling /[locale]/login ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of c:\Users\gomez\Documents\antigravity\app huevos\app-huevos\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of c:\Users\gomez\Documents\antigravity\app huevos\app-huevos\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ ✓ Compiled /[locale]/login in 24.6s (1032 modules)
+ GET /es/login 200 in 16238ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1387ms (617 modules)
+ GET /favicon.ico 200 in 1864ms
+ GET /es/login 200 in 616ms
+ GET /favicon.ico 200 in 29ms
+ ○ Compiling /[locale]/overview ...
+ ✓ Compiled /[locale]/overview in 2.9s (1093 modules)
+ GET /es/overview 200 in 4397ms
+ GET /es/overview 200 in 169ms
+ GET /es/overview 200 in 294ms
+ GET /favicon.ico 200 in 81ms
+ ○ Compiling /[locale]/clientes ...
+ ✓ Compiled /[locale]/clientes in 10.1s (1094 modules)
+ GET /es/clientes 200 in 11067ms
+ GET /es/overview 200 in 6424ms
+ GET /favicon.ico 200 in 91ms
+ GET /es/clientes 200 in 105ms
+ ○ Compiling /[locale]/zonas ...
+ ✓ Compiled /[locale]/zonas in 1314ms (1101 modules)
+ GET /es/zonas 200 in 3075ms
+ ○ Compiling /[locale]/reparto ...
+ ✓ Compiled /[locale]/reparto in 10.2s (1584 modules)
+ GET /es/reparto 200 in 11014ms
+ GET /es/zonas 200 in 5008ms
+ GET /favicon.ico 200 in 29ms
+ GET /es/zonas 200 in 168ms
+ GET /favicon.ico 200 in 15ms
+ GET /es/reparto 200 in 74ms
+ GET /es/reparto 200 in 284ms
+ ○ Compiling /[locale]/productos ...
+ ✓ Compiled /[locale]/precios in 6.5s (1583 modules)
+ ○ Compiling /[locale]/ventas ...
+ GET /es/precios 200 in 4839ms
+ GET /es/productos 200 in 8694ms
+ ✓ Compiled /[locale]/ventas in 1541ms (1590 modules)
+ GET /es/ventas 200 in 3088ms
+ GET /es/ventas 200 in 87ms
+ GET /es/ventas 200 in 479ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 2s (947 modules)
+ GET /favicon.ico 200 in 2422ms
+ ○ Compiling /[locale]/cobranzas ...
+ ✓ Compiled /[locale]/cobranzas in 2.6s (1607 modules)
+ GET /es/cobranzas 200 in 4159ms
+ ○ Compiling /[locale]/cuentas ...
+ ✓ Compiled /[locale]/cuentas in 5.2s (1583 modules)
+ GET /es/cuentas 200 in 6153ms
+ GET /es/cobranzas 200 in 4478ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 898ms (941 modules)
+ GET /favicon.ico 200 in 1383ms
+ GET /es/cuentas 200 in 203ms
+ ○ Compiling /[locale]/proveedores ...
+ ✓ Compiled /[locale]/proveedores in 1811ms (1600 modules)
+ GET /es/proveedores 200 in 3252ms
+ ○ Compiling /[locale]/compras ...
+ ✓ Compiled /[locale]/compras in 1811ms (1602 modules)
+ GET /es/compras 200 in 3024ms
+ GET /es/compras 200 in 94ms
+ GET /es/compras 200 in 57ms
+ ○ Compiling /[locale]/arqueo ...
+ ✓ Compiled /[locale]/arqueo in 1566ms (1585 modules)
+ GET /es/arqueo 200 in 2530ms
+ GET /es/compras 200 in 933ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 870ms (937 modules)
+ GET /favicon.ico 200 in 1303ms
+ GET /es/arqueo 200 in 287ms
+ ○ Compiling /[locale]/auditoria ...
+ ✓ Compiled /[locale]/auditoria in 2s (1601 modules)
+ GET /es/auditoria 200 in 3196ms
+ GET /es/auditoria 200 in 82ms
+ ○ Compiling /[locale]/usuarios ...
+ ✓ Compiled /[locale]/usuarios in 2.4s (1587 modules)
+ GET /es/usuarios 200 in 3983ms
+ ○ Compiling /[locale]/login ...
+ ✓ Compiled /[locale]/login in 3s (925 modules)
+ GET /es/login 200 in 3656ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1429ms (940 modules)
+ GET /favicon.ico 200 in 1928ms
+ ○ Compiling /[locale]/overview ...
+ ✓ Compiled /[locale]/overview in 2.4s (668 modules)
+ GET /es/overview 200 in 2745ms
+ GET /favicon.ico 200 in 26ms
+ ○ Compiling /[locale]/ventas ...
+ ✓ Compiled /[locale]/ventas in 1757ms (674 modules)
+ GET /es/ventas 200 in 2202ms
+ GET /favicon.ico 200 in 26ms

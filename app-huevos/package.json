@@ -1,0 +1,44 @@
+{
+  "name": "app-huevos",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "security-audit": "npm audit",
+    "lint:security": "eslint .",
+    "deploy-cliente": "node scripts/deploy-cliente.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "@tanstack/react-virtual": "^3.14.12",
+    "chart.js": "^4.5.1",
+    "cmdk": "^1.1.1",
+    "dotenv": "^17.4.2",
+    "exceljs": "^4.4.0",
+    "framer-motion": "^13.4.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "lucide-react": "^1.46.0",
+    "negotiator": "^1.0.0",
+    "next": "^15.5.15",
+    "next-intl": "^4.7.0",
+    "next-themes": "^0.4.6",
+    "react": "19.0.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "19.0.0",
+    "recharts": "^3.10.1",
+    "sonner": "^2.0.8",
+    "swr": "^2.5.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6",
+    "eslint-plugin-security": "^4.0.1",
+    "tailwindcss": "^4"
+  }
+}
