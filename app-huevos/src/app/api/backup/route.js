@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import ExcelJS from 'exceljs';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -89,7 +92,6 @@ export async function GET(request) {
 
     // Configurar headers para descarga Excel por defecto
     const headers = new Headers();
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     headers.append('Content-Disposition', `attachment; filename="Backup_App_Huevos_${timestamp}.xlsx"`);
     headers.append('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 

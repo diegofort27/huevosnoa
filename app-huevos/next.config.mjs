@@ -7,6 +7,7 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    serverExternalPackages: ['exceljs', 'jspdf', 'jspdf-autotable'],
 };
 
 export default withNextIntl(nextConfig);
