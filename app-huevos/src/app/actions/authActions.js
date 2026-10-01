@@ -14,11 +14,11 @@ const supabaseServer = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function loginAction(email, password) {
     // 1. Validate environment
-    if (!supabaseUrl || !supabaseAnonKey) {
-        console.error('SERVER ERROR: Missing Supabase environment variables');
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder.supabase.co')) {
+        console.error('SERVER ERROR: Missing or placeholder Supabase environment variables');
         return {
             success: false,
-            error: 'Configuration Error: Missing Supabase URL or Key on server'
+            error: 'Error de configuración: Supabase no está configurado en .env.local.'
         };
     }
 

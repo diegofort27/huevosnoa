@@ -8,6 +8,9 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholde
 const supabaseServer = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function getCurrentUser() {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl.includes('placeholder.supabase.co')) {
+        return null;
+    }
     try {
         const { data: { user }, error } = await supabaseServer.auth.getUser();
         if (error) throw error;

@@ -3,7 +3,32 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
+const isPlaceholder = !process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl.includes('placeholder.supabase.co');
+
+let hasWarnedPlaceholder = false;
+
 const customFetch = async (url, options) => {
+    const urlStr = typeof url === 'string' ? url : url?.toString() || '';
+    if (isPlaceholder || urlStr.includes('placeholder.supabase.co')) {
+        if (!hasWarnedPlaceholder) {
+            hasWarnedPlaceholder = true;
+            console.warn(
+                '⚠️ [Supabase] La variable NEXT_PUBLIC_SUPABASE_URL no está configurada o usa el valor placeholder.\n' +
+                'Para conectar la base de datos, crea el archivo "app-huevos/.env.local" con las credenciales de tu proyecto Supabase.'
+            );
+        }
+        return new Response(JSON.stringify({
+            error: 'Supabase no configurado (URL placeholder). Configura .env.local con las credenciales de tu proyecto.',
+            data: null,
+            failedToFetch: true,
+            isPlaceholder: true
+        }), {
+            status: 503,
+            statusText: "Service Unavailable (Supabase Placeholder)",
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     try {
         const response = await fetch(url, options);
         return response;
