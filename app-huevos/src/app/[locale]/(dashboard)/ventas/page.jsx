@@ -570,29 +570,34 @@ export default function VentasPage() {
     };
 
     const handleEdit = (sale) => {
+        if (!sale) return;
+
         setEditingSaleId(sale.id);
+
+        const normalizedClientId = sale.clientId ?? sale.client_id ?? '';
+        const normalizedDate = sale.date ? formatDateLocal(sale.date) : formatDateLocal();
 
         // Prepare cart items
         // Important: in the table rows, items are already formatted
         const items = (sale.items || []).map(item => ({
-            productId: item.productId,
-            productName: item.productName,
-            quantity: item.quantity,
-            basePrice: item.basePrice || item.unitPrice, // Fallback if not stored
-            unitPrice: item.unitPrice,
+            productId: Number(item.productId ?? item.product_id ?? 0),
+            productName: item.productName || item.product_name || 'Producto',
+            quantity: Number(item.quantity || 0),
+            basePrice: Number(item.basePrice ?? item.unitPrice ?? 0),
+            unitPrice: Number(item.unitPrice || 0),
             discount: item.discount_applied ? item.discount_applied[0] : null,
-            total: item.total
+            total: Number(item.total || 0)
         }));
 
         setFormData({
-            clientId: sale.clientId.toString(),
-            date: formatDateLocal(sale.date),
+            clientId: normalizedClientId ? String(normalizedClientId) : '',
+            date: normalizedDate,
             productId: '',
             quantity: 1,
             quantityType: 'unidades',
             unitPrice: 0,
-            saleType: sale.saleType,
-            status: sale.status
+            saleType: sale.saleType || 'contado',
+            status: sale.status || 'pending'
         });
         setCartItems(items);
         setShowModal(true);
@@ -621,6 +626,18 @@ export default function VentasPage() {
             label: t('client'),
             render: (value, row) => row.clientName || getClientName(row.clientId)
         },
+        {
+            key: 'paymentMethod',
+            label: 'Cobro',
+            render: (_, row) => {
+                const isCC = row.saleType === 'cc' || row.status === 'pending';
+                return (
+                    <span className={`badge ${isCC ? 'badge-info' : 'badge-success'}`}>
+                        {isCC ? 'Cuenta Corriente' : 'Contado'}
+                    </span>
+                );
+            }
+        },
         { 
             key: 'date', 
             label: t('date'),
@@ -637,6 +654,15 @@ export default function VentasPage() {
                 if (!value) return '-';
                 const text = value.map(i => i.productName).join(', ');
                 return text.length > 40 ? text.substring(0, 40) + '...' : text;
+            }
+        },
+        {
+            key: 'quantityTotal',
+            label: 'Cant. productos',
+            render: (value, row) => {
+                const items = row.items || [];
+                const total = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+                return total > 0 ? total.toLocaleString('es-AR', { maximumFractionDigits: 2 }) : '0';
             }
         },
         {
