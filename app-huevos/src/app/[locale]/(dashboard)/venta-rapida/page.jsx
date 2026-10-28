@@ -49,6 +49,63 @@ export default function VentaRapidaPage() {
 
     // Filtered / Searched products
     const [productSearch, setProductSearch] = useState('');
+    const [favorites, setFavorites] = useState([]);
+    const [filterOnlyFavorites, setFilterOnlyFavorites] = useState(false);
+
+    // Load favorites from localStorage on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('pos_favorite_products');
+            if (saved) {
+                setFavorites(JSON.parse(saved));
+            }
+        } catch (e) {
+            console.error('Error loading favorites from localStorage:', e);
+        }
+    }, []);
+
+    // Toggle product favorite status
+    const toggleFavorite = (productId, e) => {
+        if (e) e.stopPropagation();
+        setFavorites(prev => {
+            const isFav = prev.includes(productId);
+            const updated = isFav ? prev.filter(id => id !== productId) : [...prev, productId];
+            try {
+                localStorage.setItem('pos_favorite_products', JSON.stringify(updated));
+            } catch (err) {
+                console.error('Error saving favorites:', err);
+            }
+            if (isFav) {
+                toast.info('Producto quitado de favoritos');
+            } else {
+                toast.success('⭐ Agregado a favoritos (se ordenará primero)');
+            }
+            return updated;
+        });
+    };
+
+    // Move favorite product left or right in custom order
+    const moveFavorite = (productId, direction, e) => {
+        if (e) e.stopPropagation();
+        setFavorites(prev => {
+            const index = prev.indexOf(productId);
+            if (index === -1) return prev;
+            const newIndex = direction === 'left' ? index - 1 : index + 1;
+            if (newIndex < 0 || newIndex >= prev.length) return prev;
+
+            const updated = [...prev];
+            const temp = updated[index];
+            updated[index] = updated[newIndex];
+            updated[newIndex] = temp;
+
+            try {
+                localStorage.setItem('pos_favorite_products', JSON.stringify(updated));
+            } catch (err) {
+                console.error('Error saving favorites order:', err);
+            }
+            return updated;
+        });
+    };
 
     // Set default client once clients load
     useEffect(() => {
@@ -340,14 +397,31 @@ export default function VentaRapidaPage() {
         }
     };
 
-    // Filter products list
+    // Filter & Sort products list (Favorites first in custom order, then alphabetical)
     const filteredProducts = useMemo(() => {
-        return products.filter(p => {
-            const query = (productSearch || searchTerm || '').toLowerCase();
+        const query = (productSearch || searchTerm || '').toLowerCase();
+        let list = products.filter(p => {
             const matchesQuery = p.description.toLowerCase().includes(query) || (p.code && p.code.toLowerCase().includes(query));
-            return matchesQuery;
+            if (!matchesQuery) return false;
+            if (filterOnlyFavorites) {
+                return favorites.includes(p.id);
+            }
+            return true;
         });
-    }, [products, productSearch, searchTerm]);
+
+        return list.sort((a, b) => {
+            const aIsFav = favorites.includes(a.id);
+            const bIsFav = favorites.includes(b.id);
+
+            if (aIsFav && bIsFav) {
+                return favorites.indexOf(a.id) - favorites.indexOf(b.id);
+            }
+            if (aIsFav) return -1;
+            if (bIsFav) return 1;
+
+            return a.description.localeCompare(b.description);
+        });
+    }, [products, productSearch, searchTerm, favorites, filterOnlyFavorites]);
 
     return (
         <div className="pos-container fade-in">
@@ -408,13 +482,38 @@ export default function VentaRapidaPage() {
                         </div>
                         <div>
                             <label className="form-label" style={{ fontWeight: '600', fontSize: '0.85rem' }}>🔍 Buscar Producto</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Nombre o código de producto..."
-                                value={productSearch}
-                                onChange={(e) => setProductSearch(e.target.value)}
-                            />
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Nombre o código de producto..."
+                                    value={productSearch}
+                                    onChange={(e) => setProductSearch(e.target.value)}
+                                    style={{ flex: 1 }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setFilterOnlyFavorites(!filterOnlyFavorites)}
+                                    title={filterOnlyFavorites ? "Ver todos los productos" : "Ver solo productos favoritos"}
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        padding: '0 12px',
+                                        borderRadius: 'var(--radius-md)',
+                                        border: filterOnlyFavorites ? '2px solid #f59e0b' : '1px solid var(--border-color)',
+                                        background: filterOnlyFavorites ? '#fef3c7' : 'var(--bg-tertiary)',
+                                        color: filterOnlyFavorites ? '#b45309' : 'var(--text-secondary)',
+                                        fontWeight: '600',
+                                        fontSize: '0.8rem',
+                                        cursor: 'pointer',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    <span>{filterOnlyFavorites ? '★' : '☆'}</span>
+                                    <span>Favoritos {favorites.length > 0 ? `(${favorites.length})` : ''}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -430,25 +529,116 @@ export default function VentaRapidaPage() {
                                     const priceInfo = getProductPriceInfo(product, 1);
                                     const stock = parseFloat(product.current_stock || 0);
                                     const isLowStock = stock <= (product.min_stock || 0);
+                                    const isFav = favorites.includes(product.id);
+                                    const favIndex = favorites.indexOf(product.id);
 
                                     return (
                                         <div
                                             key={product.id}
                                             onClick={() => handleAddProductToCart(product, 1, 'unidades')}
                                             style={{
-                                                background: 'var(--bg-hover)',
+                                                background: isFav ? 'var(--bg-card)' : 'var(--bg-hover)',
                                                 borderRadius: '10px',
                                                 padding: '1rem',
                                                 cursor: 'pointer',
-                                                border: '1px solid var(--border)',
+                                                border: isFav ? '2px solid #f59e0b' : '1px solid var(--border)',
+                                                boxShadow: isFav ? '0 2px 8px rgba(245, 158, 11, 0.2)' : 'none',
                                                 transition: 'all 0.2s ease',
                                                 display: 'flex',
                                                 flexDirection: 'column',
-                                                justify: 'space-between',
+                                                justifyContent: 'space-between',
                                                 position: 'relative'
                                             }}
                                             className="pos-product-card"
                                         >
+                                            {/* Reorder buttons for favorites */}
+                                            {isFav && favorites.length > 1 && (
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '6px',
+                                                        left: '6px',
+                                                        display: 'flex',
+                                                        gap: '3px',
+                                                        zIndex: 2
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {favIndex > 0 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => moveFavorite(product.id, 'left', e)}
+                                                            title="Mover hacia la izquierda"
+                                                            style={{
+                                                                background: 'var(--bg-secondary)',
+                                                                border: '1px solid var(--border-color)',
+                                                                borderRadius: '4px',
+                                                                width: '22px',
+                                                                height: '22px',
+                                                                fontSize: '10px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer',
+                                                                color: 'var(--text-primary)',
+                                                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                                            }}
+                                                        >
+                                                            ◀
+                                                        </button>
+                                                    )}
+                                                    {favIndex < favorites.length - 1 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => moveFavorite(product.id, 'right', e)}
+                                                            title="Mover hacia la derecha"
+                                                            style={{
+                                                                background: 'var(--bg-secondary)',
+                                                                border: '1px solid var(--border-color)',
+                                                                borderRadius: '4px',
+                                                                width: '22px',
+                                                                height: '22px',
+                                                                fontSize: '10px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer',
+                                                                color: 'var(--text-primary)',
+                                                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                                            }}
+                                                        >
+                                                            ▶
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Star Favorite Button */}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => toggleFavorite(product.id, e)}
+                                                title={isFav ? "Quitar de favoritos" : "Marcar como favorito"}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '6px',
+                                                    right: '6px',
+                                                    background: isFav ? '#fef3c7' : 'rgba(0,0,0,0.06)',
+                                                    border: isFav ? '1px solid #f59e0b' : '1px solid transparent',
+                                                    borderRadius: '50%',
+                                                    width: '28px',
+                                                    height: '28px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '15px',
+                                                    cursor: 'pointer',
+                                                    zIndex: 2,
+                                                    transition: 'all 0.15s ease',
+                                                    color: isFav ? '#f59e0b' : 'var(--text-muted)'
+                                                }}
+                                            >
+                                                {isFav ? '★' : '☆'}
+                                            </button>
                                             <div>
                                                 <div style={{ height: '48px', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {product.image && (product.image.startsWith('http://') || product.image.startsWith('https://') || product.image.startsWith('/')) ? (
