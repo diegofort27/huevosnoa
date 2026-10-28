@@ -21,6 +21,7 @@ export default function Sidebar({ isOpen, onClose }) {
     };
 
     const mainMenuItems = [
+        { href: `/${locale}/venta-rapida`, icon: '⚡', label: 'Venta Rápida', key: 'venta-rapida', permissions: ['sales.create'] },
         { href: `/${locale}/arqueo`, icon: '🧮', label: 'Arqueo', key: 'arqueo', permission: 'arqueo.view' },
         { href: `/${locale}/clientes`, icon: '👥', label: t('clients'), key: 'clientes', permission: 'clients.manage' },
         { href: `/${locale}/cobranzas`, icon: '💳', label: t('collections'), key: 'cobranzas', permissions: ['collections.view', 'collections.create', 'collections.delete'] },
@@ -37,7 +38,6 @@ export default function Sidebar({ isOpen, onClose }) {
         { href: `/${locale}/usuarios`, icon: '👤', label: 'Usuarios', key: 'usuarios', permission: 'users.manage' },
         { href: `/${locale}/auditoria`, icon: '🕵️', label: 'Auditoría', key: 'auditoria', permission: 'users.manage' },
         { href: `/${locale}/ventas`, icon: '🛒', label: t('sales'), key: 'ventas', permissions: ['sales.view', 'sales.create', 'sales.edit', 'sales.delete'] },
-        { href: `/${locale}/venta-rapida`, icon: '⚡', label: 'Venta Rápida', key: 'venta-rapida', permissions: ['sales.create'] },
         { href: `/${locale}/zonas`, icon: '🗺️', label: 'Zonas', key: 'zonas', permission: 'zones.manage' },
         { href: `/${locale}/settings`, icon: '⚙️', label: t('settings'), key: 'settings' }
     ];

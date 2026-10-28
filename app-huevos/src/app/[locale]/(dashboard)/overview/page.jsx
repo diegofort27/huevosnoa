@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
 import StatCard from '@/components/ui/StatCard';
 import DataTable from '@/components/ui/DataTable';
@@ -186,13 +187,35 @@ export default function OverviewPage() {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '24px', fontWeight: '600' }}>
-                    {t('title')}
-                </h1>
-                <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-                    Actualizado: {new Date().toLocaleTimeString()}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                    <h1 style={{ fontSize: '24px', fontWeight: '600', margin: 0 }}>
+                        {t('title')}
+                    </h1>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '4px' }}>
+                        Actualizado: {new Date().toLocaleTimeString()}
+                    </div>
                 </div>
+                {(!profile || profile.role === 'admin' || hasPermission('sales.create')) && (
+                    <Link
+                        href={`/${locale}/venta-rapida`}
+                        className="btn btn-primary"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '10px 20px',
+                            fontSize: '15px',
+                            fontWeight: '600',
+                            borderRadius: '8px',
+                            textDecoration: 'none',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+                        }}
+                    >
+                        <span style={{ fontSize: '18px' }}>⚡</span>
+                        <span>Venta Rápida</span>
+                    </Link>
+                )}
             </div>
 
             <h3 style={{ marginBottom: '16px', fontSize: '18px', color: 'var(--text-secondary)' }}>{t('salesByAmount')}</h3>
