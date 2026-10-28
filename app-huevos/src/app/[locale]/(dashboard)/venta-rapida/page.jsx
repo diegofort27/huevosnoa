@@ -30,7 +30,12 @@ export default function VentaRapidaPage() {
 
     // Consumidor Final default client
     const consumidorFinalClient = useMemo(() => {
-        return clients.find(c => c.name.toLowerCase().includes('consumidor final') || c.name.toLowerCase().includes('mostrador')) || {
+        return clients.find(c => 
+            (c.name || '').toLowerCase().includes('consumidor final') || 
+            (c.legal_name || '').toLowerCase().includes('consumidor final') || 
+            (c.fantasy_name || '').toLowerCase().includes('consumidor final') || 
+            (c.name || '').toLowerCase().includes('mostrador')
+        ) || {
             id: 'cf',
             name: 'Consumidor Final',
             price_list_id: ventaPriceList?.id || null
@@ -264,15 +269,64 @@ export default function VentaRapidaPage() {
         setCartItems(updatedItems);
     };
 
+    // Parser seguro para montos ingresados (soporta puntos como miles o comas como decimales)
+    const parsePaymentAmount = (val) => {
+        if (val === null || val === undefined || val === '') return null;
+        const str = val.toString().trim();
+        if (!str) return null;
+        let clean = str;
+        if (clean.includes('.') && clean.includes(',')) {
+            clean = clean.replace(/\./g, '').replace(',', '.');
+        } else if (clean.includes('.')) {
+            const parts = clean.split('.');
+            if (parts.length > 1 && parts.every((p, idx) => idx === 0 || p.length === 3)) {
+                clean = clean.replace(/\./g, '');
+            }
+        } else if (clean.includes(',')) {
+            clean = clean.replace(',', '.');
+        }
+        const num = parseFloat(clean);
+        return isNaN(num) ? null : num;
+    };
+
     // Totals & Payment Calculations
     const cartTotal = useMemo(() => cartItems.reduce((sum, item) => sum + item.total, 0), [cartItems]);
-    const totalPaidInput = useMemo(() => payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0), [payments]);
     
-    // Si solo hay 1 pago y amount está vacío, asumimos que salda el total.
+    // Filas de pago con resolución inteligente (si está vacío, salda el total o el resto)
+    const calculatedPaymentRows = useMemo(() => {
+        if (payments.length === 0) return [];
+        if (payments.length === 1) {
+            const entered = parsePaymentAmount(payments[0].amount);
+            const amt = (entered === null || entered === undefined || entered <= 0) ? cartTotal : entered;
+            return [{ method: payments[0].method, amount: amt, isAuto: entered === null || entered === undefined || entered <= 0 }];
+        }
+        
+        let explicitSum = 0;
+        let emptyRowIndex = -1;
+        payments.forEach((p, idx) => {
+            const entered = parsePaymentAmount(p.amount);
+            if (entered !== null && entered > 0) {
+                explicitSum += entered;
+            } else if (emptyRowIndex === -1) {
+                emptyRowIndex = idx;
+            }
+        });
+
+        return payments.map((p, idx) => {
+            const entered = parsePaymentAmount(p.amount);
+            if (entered !== null && entered > 0) {
+                return { method: p.method, amount: entered, isAuto: false };
+            }
+            if (idx === emptyRowIndex && cartTotal > explicitSum) {
+                return { method: p.method, amount: cartTotal - explicitSum, isAuto: true };
+            }
+            return { method: p.method, amount: 0, isAuto: false };
+        });
+    }, [payments, cartTotal]);
+
     const effectivePaid = useMemo(() => {
-        if (payments.length === 1 && payments[0].amount === '') return cartTotal;
-        return totalPaidInput;
-    }, [payments, totalPaidInput, cartTotal]);
+        return calculatedPaymentRows.reduce((sum, p) => sum + (p.amount || 0), 0);
+    }, [calculatedPaymentRows]);
 
     const changeAmount = effectivePaid > cartTotal ? effectivePaid - cartTotal : 0;
     const remainingToAccount = cartTotal > effectivePaid ? cartTotal - effectivePaid : 0;
@@ -305,17 +359,10 @@ export default function VentaRapidaPage() {
 
         try {
             // 1. Prepare sale object
-            const isRealClient = selectedClientId && selectedClientId !== 'cf';
-            const clientId = isRealClient ? parseInt(selectedClientId) : null;
+            const isRealClient = selectedClientId && selectedClientId !== 'cf' && selectedClientId !== consumidorFinalClient.id?.toString();
+            const clientId = isRealClient ? parseInt(selectedClientId) : (consumidorFinalClient.id !== 'cf' ? consumidorFinalClient.id : null);
             
-            // Calculate total paid across all payment entries
-            let totalPaid = 0;
-            if (payments.length === 1 && (payments[0].amount === '' || payments[0].amount === null)) {
-                totalPaid = cartTotal;
-            } else {
-                totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-            }
-
+            const totalPaid = calculatedPaymentRows.reduce((sum, p) => sum + (p.amount || 0), 0);
             const remainingBalance = Math.max(0, cartTotal - totalPaid);
 
             // Validation: Consumidor Final cannot leave debt
@@ -327,12 +374,23 @@ export default function VentaRapidaPage() {
 
             const isFullyPaid = remainingBalance <= 0.01;
 
+            // Determinar tipo de venta / medio para la columna de Cobro
+            const activePayments = calculatedPaymentRows.filter(p => p.amount > 0);
+            let saleTypeToSave = 'contado';
+            if (!isFullyPaid) {
+                saleTypeToSave = 'cc';
+            } else if (activePayments.length === 1) {
+                saleTypeToSave = activePayments[0].method;
+            } else if (activePayments.length > 1) {
+                saleTypeToSave = 'multiple';
+            }
+
             const saleData = {
                 clientId: clientId,
                 date: date,
                 items: cartItems,
                 total: cartTotal,
-                saleType: isFullyPaid ? 'contado' : 'cc',
+                saleType: saleTypeToSave,
                 status: 'venta_rapida', // Toda venta generada en el módulo de Venta Rápida tiene status 'venta_rapida'
                 isDelivered: true, // Entregada de inmediato
                 userId: currentProfile?.id,
@@ -342,13 +400,9 @@ export default function VentaRapidaPage() {
             // 2. Create Sale
             const createdSale = await createSale(saleData);
 
-            // 4. Create Collections (Cobranzas) for each payment entry entered
-            for (const p of payments) {
-                let pAmount = parseFloat(p.amount) || 0;
-                if (payments.length === 1 && (p.amount === '' || p.amount === null)) {
-                    pAmount = cartTotal;
-                }
-
+            // 3. Create Collections (Cobranzas) for each payment entry entered
+            for (const p of activePayments) {
+                const pAmount = p.amount;
                 if (pAmount <= 0) continue;
 
                 let arqueoCategoryId = null;
@@ -360,12 +414,17 @@ export default function VentaRapidaPage() {
                     arqueoCategoryId = cat?.id;
                 }
 
+                const obsText = observations.trim();
+                const colObs = obsText 
+                    ? `Venta Rápida #${createdSale.id} - ${obsText}`
+                    : `Venta Rápida #${createdSale.id}`;
+
                 await createCollection({
                     clientId: clientId,
                     date: date,
                     amount: pAmount,
                     paymentMethod: p.method,
-                    observations: observations ? `Venta Rápida #${createdSale.id} - ${observations}` : `Venta Rápida #${createdSale.id}`,
+                    observations: colObs,
                     collectorId: currentProfile?.id,
                     currency: 'ARS',
                     arqueo_category_id: arqueoCategoryId,
@@ -846,6 +905,30 @@ export default function VentaRapidaPage() {
                                 ⚠️ Consumidor Final no admite saldo en Cta. Cte. Selecciona un cliente registrado o ingresa el cobro completo.
                             </div>
                         )}
+
+                        {/* Observaciones Input */}
+                        <div style={{ marginBottom: '0.75rem' }}>
+                            <label className="form-label" style={{ fontWeight: '600', fontSize: '0.8rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span>📝 Observaciones</span>
+                                <span style={{ fontSize: '0.7rem', fontWeight: 'normal', color: 'var(--text-muted)' }}>(opcional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                className="form-control form-input"
+                                placeholder="Ej: Pago con billetes de $2000, transferido desde banco..."
+                                value={observations}
+                                onChange={(e) => setObservations(e.target.value)}
+                                style={{
+                                    fontSize: '0.85rem',
+                                    padding: '0.45rem 0.65rem',
+                                    backgroundColor: 'var(--bg-tertiary)',
+                                    color: 'var(--text-primary)',
+                                    borderColor: 'var(--border-color)',
+                                    borderRadius: '6px',
+                                    width: '100%'
+                                }}
+                            />
+                        </div>
 
                         {/* Submit Button */}
                         <button

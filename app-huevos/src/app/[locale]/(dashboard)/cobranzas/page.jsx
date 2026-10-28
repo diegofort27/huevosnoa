@@ -127,6 +127,12 @@ export default function CobranzasPage() {
     };
 
     const getPaymentMethodName = (id) => {
+        if (id === 'cash') return 'Efectivo';
+        if (id === 'transfer') return 'Transferencia';
+        if (id === 'mercadoPago') return 'Mercado Pago';
+        if (id === 'check') return 'Cheque';
+        if (id === 'other') return 'Otro';
+        if (id === 'cc') return 'Cuenta Corriente';
         const method = mockPaymentMethods.find(m => m.id === id);
         return method ? method.name : id;
     };
@@ -225,7 +231,7 @@ export default function CobranzasPage() {
         {
             key: 'clientName',
             label: 'Cliente',
-            render: (value, row) => row.clientName || 'Cliente desconocido'
+            render: (value, row) => row.clientName || (row.observations?.includes('Venta Rápida') ? 'Consumidor Final' : 'Cliente desconocido')
         },
         { key: 'date', label: 'Fecha' },
         {

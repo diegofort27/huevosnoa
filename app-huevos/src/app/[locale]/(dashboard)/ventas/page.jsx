@@ -630,10 +630,29 @@ export default function VentasPage() {
             key: 'paymentMethod',
             label: 'Cobro',
             render: (_, row) => {
-                const isCC = row.saleType === 'cc' || row.status === 'pending';
+                const method = row.saleType;
+                if (method === 'cash' || method === 'efectivo') {
+                    return <span className="badge badge-success">💵 Efectivo</span>;
+                }
+                if (method === 'transfer' || method === 'transferencia') {
+                    return <span className="badge badge-info">🏦 Transferencia</span>;
+                }
+                if (method === 'mercadoPago') {
+                    return <span className="badge badge-warning">📱 Mercado Pago</span>;
+                }
+                if (method === 'check') {
+                    return <span className="badge badge-secondary">📄 Cheque</span>;
+                }
+                if (method === 'multiple') {
+                    return <span className="badge badge-secondary">⚡ Mixto</span>;
+                }
+                if (method === 'contado') {
+                    return <span className="badge badge-success">💵 Contado</span>;
+                }
+                const isCC = method === 'cc' || (row.status === 'pending' && row.status !== 'venta_rapida');
                 return (
                     <span className={`badge ${isCC ? 'badge-info' : 'badge-success'}`}>
-                        {isCC ? 'Cuenta Corriente' : 'Contado'}
+                        {isCC ? '📋 Cuenta Corriente' : '💵 Contado'}
                     </span>
                 );
             }
@@ -669,7 +688,7 @@ export default function VentasPage() {
             key: 'saleType',
             label: t('saleType'),
             render: (value, row) => {
-                const isCC = value === 'cc' || (row.status === 'pending');
+                const isCC = value === 'cc' || (row.status === 'pending' && row.status !== 'venta_rapida');
                 return (
                     <span className={`badge ${isCC ? 'badge-info' : 'badge-success'}`}>
                         {isCC ? 'Cuenta Corriente' : 'Contado'}
