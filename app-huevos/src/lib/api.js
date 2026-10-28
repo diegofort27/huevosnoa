@@ -139,6 +139,20 @@ export const updateProduct = async (id, updates) => {
 export const deleteProduct = async (id) => {
     try {
         console.log(`API: Eliminando producto ${id}`);
+
+        // 1. Desvincular de items de ventas históricas (set null para no romper el historial de ventas)
+        await supabase.from('sale_items').update({ product_id: null }).eq('product_id', id);
+
+        // 2. Desvincular de compras si existen
+        await supabase.from('purchase_items').update({ product_id: null }).eq('product_id', id);
+
+        // 3. Eliminar cambios de precio programados asociados
+        await supabase.from('scheduled_price_changes').delete().eq('product_id', id);
+
+        // 4. Eliminar de listas de precios
+        await supabase.from('price_list_items').delete().eq('product_id', id);
+
+        // 5. Eliminar el producto de la tabla principal
         const { error } = await supabase.from('products').delete().eq('id', id);
         if (error) throw error;
         return true;

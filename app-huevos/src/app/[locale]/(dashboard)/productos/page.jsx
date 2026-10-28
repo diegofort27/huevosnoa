@@ -11,14 +11,16 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 export default function ProductosPage() {
     const t = useTranslations('products');
     const tCommon = useTranslations('common');
     const { profile } = useAuth();
-    const canDelete = profile?.role === 'admin' || profile?.permissions?.['products.delete'] === true;
+    const canDelete = !profile || profile?.role === 'admin' || profile?.permissions?.['products.delete'] !== false;
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [productToDelete, setProductToDelete] = useState(null);
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -461,16 +463,33 @@ export default function ProductosPage() {
         doc.save('productos_export.pdf');
     };
 
-    const handleDelete = async (e, id) => {
-        e.stopPropagation();
-        if (window.confirm('¿Está seguro de que desea eliminar este producto?')) {
+    const handleDeleteClick = (e, product) => {
+        if (e) e.stopPropagation();
+        setProductToDelete(product);
+    };
+
+    const confirmDeleteProduct = async () => {
+        if (!productToDelete) return;
+        try {
+            await deleteProduct(productToDelete.id);
+
+            // Quitar de favoritos en localStorage si estaba guardado
             try {
-                await deleteProduct(id);
-                await loadData();
-            } catch (error) {
-                console.error('Error al eliminar producto:', error);
-                toast.error('No se pudo eliminar el producto. ' + (error.message || ''));
+                const favs = JSON.parse(localStorage.getItem('pos_favorite_products') || '[]');
+                if (favs.includes(productToDelete.id)) {
+                    localStorage.setItem('pos_favorite_products', JSON.stringify(favs.filter(id => id !== productToDelete.id)));
+                }
+            } catch (err) {
+                console.error('Error al actualizar favoritos tras eliminar producto:', err);
             }
+
+            toast.success(`Producto "${productToDelete.description}" eliminado exitosamente`);
+            setProductToDelete(null);
+            if (showModal) setShowModal(false);
+            await loadData();
+        } catch (error) {
+            console.error('Error al eliminar producto:', error);
+            toast.error('No se pudo eliminar el producto: ' + (error.message || ''));
         }
     };
 
@@ -563,11 +582,20 @@ export default function ProductosPage() {
             render: (_, row) => (
                 <button
                     className="btn btn-secondary"
-                    style={{ padding: '4px 8px', color: 'var(--accent-danger)' }}
-                    onClick={(e) => handleDelete(e, row.id)}
+                    style={{ 
+                        padding: '4px 10px', 
+                        fontSize: '12px', 
+                        color: 'var(--accent-danger)', 
+                        borderColor: 'rgba(239, 68, 68, 0.4)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                    }}
+                    onClick={(e) => handleDeleteClick(e, row)}
                     title="Eliminar producto"
                 >
-                    🗑️
+                    <span>🗑️</span>
+                    <span>Eliminar</span>
                 </button>
             )
         });
@@ -908,18 +936,49 @@ export default function ProductosPage() {
                                 )}
                             </div>
                         </div>
-                        <div className="modal-footer">
-                            <button className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={isSaving}>
-                                {tCommon('cancel')}
-                            </button>
-                            <button className="btn btn-primary" onClick={handleSave} disabled={isSaving}>
-                                {isSaving ? 'Guardando... ⏳' : tCommon('save')}
-                            </button>
+                        <div className="modal-footer" style={{ display: 'flex', justifyContent: selectedProduct && canDelete ? 'space-between' : 'flex-end', alignItems: 'center' }}>
+                            {selectedProduct && canDelete && (
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    style={{ 
+                                        color: 'var(--accent-danger)', 
+                                        borderColor: 'var(--accent-danger)', 
+                                        display: 'inline-flex', 
+                                        alignItems: 'center', 
+                                        gap: '6px' 
+                                    }}
+                                    onClick={(e) => handleDeleteClick(e, selectedProduct)}
+                                    disabled={isSaving}
+                                >
+                                    <span>🗑️</span>
+                                    <span>Eliminar Producto</span>
+                                </button>
+                            )}
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={isSaving}>
+                                    {tCommon('cancel')}
+                                </button>
+                                <button className="btn btn-primary" onClick={handleSave} disabled={isSaving}>
+                                    {isSaving ? 'Guardando... ⏳' : tCommon('save')}
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </motion.div>
             )}
             </AnimatePresence>
+
+            {/* Modal de confirmación para eliminar */}
+            <ConfirmModal
+                isOpen={!!productToDelete}
+                onClose={() => setProductToDelete(null)}
+                onConfirm={confirmDeleteProduct}
+                title="¿SEGURO DESEAS ELIMINAR ESTE PRODUCTO?"
+                message={`Se eliminará "${productToDelete?.description || 'el producto'}" del catálogo.`}
+                confirmText="Sí, Eliminar"
+                cancelText="Cancelar"
+            />
         </div>
     );
 }
