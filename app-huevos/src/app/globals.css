@@ -677,6 +677,62 @@ body {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.form-control:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+/* Ensure dropdowns and option elements always have high-contrast readable text and background */
+select,
+.form-select,
+.form-control {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+select option,
+.form-select option,
+.form-control option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.dark select,
+[data-theme='dark'] select,
+.dark .form-select,
+[data-theme='dark'] .form-select,
+.dark .form-control,
+[data-theme='dark'] .form-control {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.dark select option,
+[data-theme='dark'] select option,
+.dark .form-select option,
+[data-theme='dark'] .form-select option,
+.dark .form-control option,
+[data-theme='dark'] .form-control option {
+  background-color: #1a2332;
+  color: #ffffff;
+}
+
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
   outline: 2px solid var(--accent-primary);

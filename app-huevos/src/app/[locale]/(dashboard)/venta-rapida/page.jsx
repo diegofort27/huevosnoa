@@ -389,9 +389,14 @@ export default function VentaRapidaPage() {
                                 )}
                             </div>
                             <select
-                                className="form-control"
+                                className="form-control form-select"
                                 value={selectedClientId}
                                 onChange={(e) => setSelectedClientId(e.target.value)}
+                                style={{
+                                    backgroundColor: 'var(--bg-tertiary)',
+                                    color: 'var(--text-primary)',
+                                    borderColor: 'var(--border-color)'
+                                }}
                             >
                                 <option value="cf">🌐 Consumidor Final (Venta Mostrador)</option>
                                 {clients.map(c => (
@@ -585,16 +590,24 @@ export default function VentaRapidaPage() {
                                 {payments.map((p, idx) => (
                                     <div key={idx} style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                                         <select
-                                            className="form-control"
+                                            className="form-control form-select"
                                             value={p.method}
                                             onChange={(e) => handleUpdatePayment(idx, 'method', e.target.value)}
-                                            style={{ flex: '1.2', fontSize: '0.85rem', padding: '0.4rem 0.5rem' }}
+                                            style={{
+                                                flex: '1.2',
+                                                fontSize: '0.85rem',
+                                                padding: '0.4rem 0.5rem',
+                                                backgroundColor: 'var(--bg-tertiary)',
+                                                color: 'var(--text-primary)',
+                                                borderColor: 'var(--border-color)',
+                                                borderRadius: '6px'
+                                            }}
                                         >
-                                            <option value="cash">Efectivo</option>
-                                            <option value="transfer">Transferencia</option>
-                                            <option value="mercadoPago">Mercado Pago</option>
-                                            <option value="check">Cheque</option>
-                                            <option value="other">Otro</option>
+                                            <option value="cash">💵 Efectivo</option>
+                                            <option value="transfer">🏦 Transferencia</option>
+                                            <option value="mercadoPago">📱 Mercado Pago</option>
+                                            <option value="check">📄 Cheque</option>
+                                            <option value="other">⚡ Otro</option>
                                         </select>
                                         <input
                                             type="number"
