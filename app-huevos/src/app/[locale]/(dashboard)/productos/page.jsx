@@ -43,7 +43,7 @@ export default function ProductosPage() {
         basePrice: 0,
         image: '🥚',
         allowNegativeStock: false,
-        category: '',
+        category: 'Venta al Público',
         vigenciaTipo: 'inmediata',
         vigenciaFecha: ''
     });
@@ -122,6 +122,7 @@ export default function ProductosPage() {
         if (product) {
             setSelectedProduct(product);
             marginRef.current = (product.cost > 0 && product.base_price > 0) ? (product.base_price / product.cost) : 1;
+            const isProd = product.category === 'Producción' || product.category === 'produccion';
             setFormData({
                 code: product.code,
                 description: product.description,
@@ -132,7 +133,7 @@ export default function ProductosPage() {
                 basePrice: product.base_price || 0,
                 image: product.image || '🥚',
                 allowNegativeStock: product.allow_negative_stock || false,
-                category: product.category || '',
+                category: isProd ? 'Producción' : 'Venta al Público',
                 vigenciaTipo: 'inmediata',
                 vigenciaFecha: ''
             });
@@ -149,7 +150,7 @@ export default function ProductosPage() {
                 basePrice: 0,
                 image: '🥚',
                 allowNegativeStock: false,
-                category: '',
+                category: 'Venta al Público',
                 vigenciaTipo: 'inmediata',
                 vigenciaFecha: ''
             });
@@ -500,7 +501,31 @@ export default function ProductosPage() {
                 </div>
             )
         },
-        { key: 'category', label: 'Categoría' },
+        {
+            key: 'category',
+            label: 'Categoría',
+            render: (value) => {
+                const isProd = value === 'Producción' || value === 'produccion';
+                return (
+                    <span
+                        className="badge"
+                        style={{
+                            backgroundColor: isProd ? 'rgba(234, 179, 8, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                            color: isProd ? '#ca8a04' : '#10b981',
+                            fontWeight: '600',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                        }}
+                    >
+                        {isProd ? '🏭 Producción' : '🛒 Venta al Público'}
+                    </span>
+                );
+            }
+        },
         { key: 'unit', label: t('unit') },
         {
             key: 'current_stock',
@@ -580,30 +605,47 @@ export default function ProductosPage() {
             </div>
 
             <div className="card">
-                <div className="card-header" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <div className="form-group" style={{ margin: 0, minWidth: '200px' }}>
-                        <select 
-                            className="form-select"
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
+                <div className="card-header" style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                            type="button"
+                            className={`btn ${selectedCategory === '' ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setSelectedCategory('')}
+                            style={{ padding: '6px 14px', fontSize: '13px' }}
                         >
-                            <option value="">Todas las categorías</option>
-                            {[...new Set(products.map(p => p.category).filter(Boolean))].sort().map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
-                            ))}
-                        </select>
+                            Todos ({products.length})
+                        </button>
+                        <button
+                            type="button"
+                            className={`btn ${selectedCategory === 'Venta al Público' ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setSelectedCategory('Venta al Público')}
+                            style={{ padding: '6px 14px', fontSize: '13px' }}
+                        >
+                            🛒 Venta al Público ({products.filter(p => p.category !== 'Producción' && p.category !== 'produccion').length})
+                        </button>
+                        <button
+                            type="button"
+                            className={`btn ${selectedCategory === 'Producción' ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setSelectedCategory('Producción')}
+                            style={{ padding: '6px 14px', fontSize: '13px' }}
+                        >
+                            🏭 Producción ({products.filter(p => p.category === 'Producción' || p.category === 'produccion').length})
+                        </button>
                     </div>
                 </div>
                 <div className="card-body">
                     <DataTable
                         columns={columns}
                         data={products.filter(product => {
-                            if (selectedCategory && product.category !== selectedCategory) return false;
+                            const isProd = product.category === 'Producción' || product.category === 'produccion';
+                            if (selectedCategory === 'Producción' && !isProd) return false;
+                            if (selectedCategory === 'Venta al Público' && isProd) return false;
                             if (!searchTerm) return true;
                             const term = searchTerm.toLowerCase();
                             return (
                                 product.code?.toLowerCase().includes(term) ||
-                                product.description?.toLowerCase().includes(term)
+                                product.description?.toLowerCase().includes(term) ||
+                                (product.category && product.category.toLowerCase().includes(term))
                             );
                         })}
                         onRowClick={(product) => openModal(product)}
@@ -661,21 +703,22 @@ export default function ProductosPage() {
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Categoría</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
+                                <label className="form-label">Categoría / Destino *</label>
+                                <select
+                                    className="form-select"
                                     name="category"
-                                    value={formData.category}
+                                    value={formData.category === 'Producción' || formData.category === 'produccion' ? 'Producción' : 'Venta al Público'}
                                     onChange={handleInputChange}
-                                    list="category-suggestions"
-                                    placeholder="Ej: Huevos Blancos, Envases..."
-                                />
-                                <datalist id="category-suggestions">
-                                    {[...new Set(products.map(p => p.category).filter(Boolean))].sort().map(cat => (
-                                        <option key={cat} value={cat} />
-                                    ))}
-                                </datalist>
+                                    style={{ fontWeight: '500' }}
+                                >
+                                    <option value="Venta al Público">🛒 Venta al Público (Aparece en Ventas y Venta Rápida)</option>
+                                    <option value="Producción">🏭 Producción (Insumo / Uso Interno - Oculto en Ventas)</option>
+                                </select>
+                                <small style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                                    {formData.category === 'Producción' || formData.category === 'produccion'
+                                        ? '⚠️ Los productos de producción NO aparecerán disponibles para ser vendidos en Ventas ni Venta Rápida.'
+                                        : '✅ Este producto aparecerá disponible en el catálogo de Ventas y Venta Rápida.'}
+                                </small>
                             </div>
 
                             <div className="form-group">

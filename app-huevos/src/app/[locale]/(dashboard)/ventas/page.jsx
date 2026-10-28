@@ -849,7 +849,7 @@ export default function VentasPage() {
                                             onChange={handleInputChange}
                                         >
                                             <option value="">Producto...</option>
-                                            {products.map(product => (
+                                            {products.filter(p => p.category !== 'Producción' && p.category !== 'produccion').map(product => (
                                                 <option key={product.id} value={product.id}>{product.description}</option>
                                             ))}
                                         </select>
@@ -1158,7 +1158,7 @@ export default function VentasPage() {
                                                     onChange={handleCnProductChange}
                                                 >
                                                     <option value="">Seleccionar...</option>
-                                                    {products.map(product => (
+                                                    {products.filter(p => p.category !== 'Producción' && p.category !== 'produccion').map(product => (
                                                         <option key={product.id} value={product.id}>
                                                             {product.description}
                                                         </option>

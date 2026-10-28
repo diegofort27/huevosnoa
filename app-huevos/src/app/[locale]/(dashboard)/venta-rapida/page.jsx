@@ -401,6 +401,9 @@ export default function VentaRapidaPage() {
     const filteredProducts = useMemo(() => {
         const query = (productSearch || searchTerm || '').toLowerCase();
         let list = products.filter(p => {
+            // Exclude production products from POS / sales
+            if (p.category === 'Producción' || p.category === 'produccion') return false;
+
             const matchesQuery = p.description.toLowerCase().includes(query) || (p.code && p.code.toLowerCase().includes(query));
             if (!matchesQuery) return false;
             if (filterOnlyFavorites) {
