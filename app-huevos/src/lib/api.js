@@ -533,14 +533,19 @@ export const updateSale = async (id, saleData) => {
     // El saldo se ajusta automáticamente vía trigger en la DB al actualizar la venta
 
     console.log('API: Actualizando cabecera de venta...');
+    const updatePayload = {
+        date: saleData.date,
+        sale_type: saleData.saleType || saleData.sale_type,
+        status: saleData.status,
+        total: saleData.total
+    };
+    if (saleData.isDelivered !== undefined) {
+        updatePayload.is_delivered = saleData.isDelivered;
+    }
+
     const { error: saleError } = await supabase
         .from('sales')
-        .update({
-            date: saleData.date,
-            sale_type: saleData.saleType || saleData.sale_type,
-            status: saleData.status,
-            total: saleData.total
-        })
+        .update(updatePayload)
         .eq('id', id);
 
     if (saleError) {

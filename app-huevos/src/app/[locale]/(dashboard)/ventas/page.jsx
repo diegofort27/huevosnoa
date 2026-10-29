@@ -5,7 +5,7 @@ import useSWR, { mutate } from 'swr';
 import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from 'next/navigation';
 import DataTable from '@/components/ui/DataTable';
-import { getSales, createSale, updateSale, getClients, getProducts, getPriceLists, getZones, deleteSale, createClientAdjustment } from '@/lib/api';
+import { getSales, createSale, updateSale, updateSaleDeliveryStatus, getClients, getProducts, getPriceLists, getZones, deleteSale, createClientAdjustment } from '@/lib/api';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -16,11 +16,13 @@ import { useSearch } from '@/components/providers/SearchProvider';
 export default function VentasPage() {
     const t = useTranslations('sales');
     const tCommon = useTranslations('common');
-    const { profile: currentProfile } = useAuth();
+    const { profile: currentProfile, hasPermission } = useAuth();
     const { searchTerm } = useSearch();
     const [showModal, setShowModal] = useState(false);
     const [editingSaleId, setEditingSaleId] = useState(null);
     const [saleToDelete, setSaleToDelete] = useState(null);
+    const [saleToDeliver, setSaleToDeliver] = useState(null);
+    const [isDelivering, setIsDelivering] = useState(false);
 
     // Credit Note Modal state
     const [showCreditNoteModal, setShowCreditNoteModal] = useState(false);
@@ -48,6 +50,7 @@ export default function VentasPage() {
 
     const canDelete = currentProfile?.role === 'admin' || currentProfile?.permissions?.['sales.delete'];
     const isAdmin = currentProfile?.role === 'admin';
+    const canConfirmDelivery = isAdmin || !hasPermission || hasPermission('delivery.confirm') || hasPermission('sales.edit') || hasPermission('sales.create');
 
     // Data state using SWR for aggressive caching
     const { data: sales = [], error: salesError, isLoading: isSalesLoading } = useSWR('sales', () => getSales(), { 
@@ -139,11 +142,12 @@ export default function VentasPage() {
             if (e.key === 'Escape') {
                 if (showModal) setShowModal(false);
                 if (saleToDelete) setSaleToDelete(null);
+                if (saleToDeliver) setSaleToDeliver(null);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [showModal, saleToDelete]);
+    }, [showModal, saleToDelete, saleToDeliver]);
 
     // Persistence: Save draft on changes
     useEffect(() => {
@@ -535,7 +539,14 @@ export default function VentasPage() {
 
         try {
             if (editingSaleId) {
+                const originalSale = sales.find(s => s.id === editingSaleId);
+                const wasDelivered = Boolean(originalSale?.isDelivered || originalSale?.status === 'success');
+
                 await updateSale(editingSaleId, saleData);
+
+                if (!wasDelivered && (formData.status === 'success' || formData.isDelivered)) {
+                    await updateSaleDeliveryStatus([editingSaleId], true);
+                }
             } else {
                 await createSale(saleData);
             }
@@ -545,6 +556,7 @@ export default function VentasPage() {
 
             // Optimistically update and revalidate
             mutate('sales');
+            mutate('clients');
 
             // Reset form
             setFormData({
@@ -576,6 +588,7 @@ export default function VentasPage() {
 
         const normalizedClientId = sale.clientId ?? sale.client_id ?? '';
         const normalizedDate = sale.date ? formatDateLocal(sale.date) : formatDateLocal();
+        const isAlreadyDelivered = Boolean(sale.isDelivered || sale.status === 'success');
 
         // Prepare cart items
         // Important: in the table rows, items are already formatted
@@ -597,7 +610,8 @@ export default function VentasPage() {
             quantityType: 'unidades',
             unitPrice: 0,
             saleType: sale.saleType || 'contado',
-            status: sale.status || 'pending'
+            status: isAlreadyDelivered ? 'success' : (sale.status || 'pending'),
+            isDelivered: isAlreadyDelivered
         });
         setCartItems(items);
         setShowModal(true);
@@ -613,9 +627,27 @@ export default function VentasPage() {
             await deleteSale(saleToDelete);
             setSaleToDelete(null);
             mutate('sales');
+            mutate('clients');
         } catch (error) {
             console.error('Error al eliminar:', error);
             toast.error('Error al eliminar la venta');
+        }
+    };
+
+    const confirmDelivery = async () => {
+        if (!saleToDeliver) return;
+        setIsDelivering(true);
+        try {
+            await updateSaleDeliveryStatus([saleToDeliver.id], true);
+            toast.success(`Venta #${saleToDeliver.id} marcada como entregada.`);
+            setSaleToDeliver(null);
+            mutate('sales');
+            mutate('clients');
+        } catch (error) {
+            console.error('Error al actualizar estado de entrega:', error);
+            toast.error('Error al marcar la venta como entregada. Verifique su conexión.');
+        } finally {
+            setIsDelivering(false);
         }
     };
 
@@ -707,10 +739,59 @@ export default function VentasPage() {
                         </span>
                     );
                 }
+
+                const isDelivered = Boolean(row.isDelivered || value === 'success');
+
+                if (isDelivered) {
+                    return (
+                        <span className="badge badge-success" style={{ fontWeight: '600' }}>
+                            ✓ Entregado
+                        </span>
+                    );
+                }
+
                 return (
-                    <span className={`badge ${value === 'success' ? 'badge-success' : 'badge-warning'}`}>
-                        {value === 'success' ? t('success') : t('pending')}
-                    </span>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <span
+                            className="badge badge-warning"
+                            style={{
+                                cursor: canConfirmDelivery ? 'pointer' : 'default',
+                                userSelect: 'none'
+                            }}
+                            onClick={(e) => {
+                                if (canConfirmDelivery) {
+                                    e.stopPropagation();
+                                    setSaleToDeliver(row);
+                                }
+                            }}
+                            title={canConfirmDelivery ? 'Haga clic para marcar como entregado' : undefined}
+                        >
+                            ⏳ {t('pending')}
+                        </span>
+                        {canConfirmDelivery && (
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                style={{
+                                    fontSize: '11px',
+                                    padding: '2px 8px',
+                                    color: 'var(--accent-success)',
+                                    borderColor: 'var(--accent-success)',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    whiteSpace: 'nowrap'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSaleToDeliver(row);
+                                }}
+                                title="Marcar como entregado"
+                            >
+                                ✓ Entregar
+                            </button>
+                        )}
+                    </div>
                 );
             }
         },
@@ -807,8 +888,9 @@ export default function VentasPage() {
                             const clientName = (sale.clientName || getClientName(sale.clientId) || '').toLowerCase();
                             const productNames = (sale.items || []).map(i => i.productName.toLowerCase()).join(' ');
                             const id = sale.id.toString();
+                            const statusText = (sale.isDelivered || sale.status === 'success') ? 'entregado' : 'pendiente';
 
-                            return clientName.includes(term) || productNames.includes(term) || id.includes(term);
+                            return clientName.includes(term) || productNames.includes(term) || id.includes(term) || statusText.includes(term);
                         })}
                     />
                 </div>
@@ -1029,17 +1111,46 @@ export default function VentasPage() {
                                 </div>
                             )}
 
-                            <div className="form-group">
-                                <label className="form-label">{t('saleType')}</label>
-                                <select
-                                    className="form-select"
-                                    name="saleType"
-                                    value={formData.saleType}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="contado">Contado</option>
-                                    <option value="cc">Cuenta Corriente</option>
-                                </select>
+                            <div style={{ display: 'grid', gridTemplateColumns: editingSaleId ? '1fr 1fr' : '1fr', gap: '16px' }}>
+                                <div className="form-group">
+                                    <label className="form-label">{t('saleType')}</label>
+                                    <select
+                                        className="form-select"
+                                        name="saleType"
+                                        value={formData.saleType}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="contado">Contado</option>
+                                        <option value="cc">Cuenta Corriente</option>
+                                    </select>
+                                </div>
+                                {editingSaleId && (
+                                    <div className="form-group">
+                                        <label className="form-label">Estado de Entrega</label>
+                                        <select
+                                            className="form-select"
+                                            name="status"
+                                            value={formData.status === 'success' || formData.isDelivered ? 'success' : 'pending'}
+                                            onChange={(e) => {
+                                                const newStatus = e.target.value;
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    status: newStatus,
+                                                    isDelivered: newStatus === 'success'
+                                                }));
+                                            }}
+                                            disabled={Boolean(sales.find(s => s.id === editingSaleId)?.isDelivered)}
+                                        >
+                                            <option value="pending">⏳ Pendiente</option>
+                                            <option value="success">✓ Entregado</option>
+                                        </select>
+                                        {sales.find(s => s.id === editingSaleId)?.isDelivered && (
+                                            <small style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '4px', display: 'block' }}>
+                                                Esta venta ya fue entregada y su saldo registrado.
+                                            </small>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <div style={{
@@ -1297,6 +1408,18 @@ export default function VentasPage() {
                 onConfirm={confirmDelete}
                 title="¿SEGURO DESEAS ELIMINAR?"
                 message="Esta acción no se puede deshacer y actualizará los saldos."
+            />
+
+            {/* Modal de Confirmación de Entrega */}
+            <ConfirmModal
+                isOpen={!!saleToDeliver}
+                onClose={() => setSaleToDeliver(null)}
+                onConfirm={confirmDelivery}
+                title="¿Marcar como Entregado?"
+                message={saleToDeliver ? `¿Deseas confirmar la entrega del pedido #${saleToDeliver.id} de "${saleToDeliver.clientName || getClientName(saleToDeliver.clientId)}"? Esta acción registrará el saldo en cuenta corriente.` : ''}
+                confirmText={isDelivering ? 'Confirmando...' : 'Sí, marcar como entregada'}
+                cancelText="Cancelar"
+                type="info"
             />
         </div>
     );
