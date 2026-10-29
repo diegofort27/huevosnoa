@@ -162,6 +162,7 @@ export default function VentaRapidaPage() {
     useEffect(() => {
         if (cartItems.length > 0 && activePriceList && products.length > 0) {
             setCartItems(prevItems => prevItems.map(item => {
+                if (item.isCustomPrice) return item;
                 const product = products.find(p => p.id === item.productId);
                 if (!product) return item;
                 const priceInfo = getProductPriceInfo(product, item.quantity);
@@ -207,16 +208,18 @@ export default function VentaRapidaPage() {
 
         if (existingIndex >= 0) {
             const updatedItems = [...cartItems];
-            const updatedQty = updatedItems[existingIndex].quantity + totalUnits;
+            const currentItem = updatedItems[existingIndex];
+            const updatedQty = currentItem.quantity + totalUnits;
             const updatedPriceInfo = getProductPriceInfo(product, updatedQty);
+            const unitPrice = currentItem.isCustomPrice ? currentItem.unitPrice : updatedPriceInfo.finalUnitPrice;
 
             updatedItems[existingIndex] = {
-                ...updatedItems[existingIndex],
+                ...currentItem,
                 quantity: updatedQty,
-                unitPrice: updatedPriceInfo.finalUnitPrice,
+                unitPrice: unitPrice,
                 basePrice: updatedPriceInfo.basePrice,
-                discount: updatedPriceInfo.discount ? (updatedPriceInfo.basePrice - updatedPriceInfo.finalUnitPrice) : null,
-                total: updatedQty * updatedPriceInfo.finalUnitPrice
+                discount: unitPrice < updatedPriceInfo.basePrice ? (updatedPriceInfo.basePrice - unitPrice) : null,
+                total: updatedQty * unitPrice
             };
             setCartItems(updatedItems);
         } else {
@@ -226,6 +229,7 @@ export default function VentaRapidaPage() {
                 quantity: totalUnits,
                 basePrice: priceInfo.basePrice,
                 unitPrice: priceInfo.finalUnitPrice,
+                isCustomPrice: false,
                 discount: priceInfo.discount ? (priceInfo.basePrice - priceInfo.finalUnitPrice) : null,
                 total: totalUnits * priceInfo.finalUnitPrice
             };
@@ -257,16 +261,75 @@ export default function VentaRapidaPage() {
         }
 
         const priceInfo = getProductPriceInfo(product, newQty);
+        const unitPrice = item.isCustomPrice ? item.unitPrice : priceInfo.finalUnitPrice;
         const updatedItems = [...cartItems];
         updatedItems[index] = {
             ...item,
             quantity: newQty,
-            unitPrice: priceInfo.finalUnitPrice,
+            unitPrice: unitPrice,
             basePrice: priceInfo.basePrice,
-            discount: priceInfo.discount ? (priceInfo.basePrice - priceInfo.finalUnitPrice) : null,
-            total: newQty * priceInfo.finalUnitPrice
+            discount: unitPrice < priceInfo.basePrice ? (priceInfo.basePrice - unitPrice) : null,
+            total: newQty * unitPrice
         };
         setCartItems(updatedItems);
+    };
+
+    // Update cart item unit price manually
+    const handleUpdateCartUnitPrice = (index, value) => {
+        const updatedItems = [...cartItems];
+        const item = updatedItems[index];
+        const product = products.find(p => p.id === item.productId);
+
+        if (value === '' || value === null || value === undefined) {
+            updatedItems[index] = {
+                ...item,
+                unitPrice: '',
+                isCustomPrice: true,
+                total: 0
+            };
+            setCartItems(updatedItems);
+            return;
+        }
+
+        const parsedPrice = parseFloat(value);
+        if (isNaN(parsedPrice) || parsedPrice < 0) return;
+
+        const basePrice = item.basePrice || (product ? product.base_price : parsedPrice);
+
+        updatedItems[index] = {
+            ...item,
+            unitPrice: parsedPrice,
+            isCustomPrice: true,
+            discount: parsedPrice < basePrice ? (basePrice - parsedPrice) : null,
+            total: item.quantity * parsedPrice
+        };
+        setCartItems(updatedItems);
+    };
+
+    const handleBlurCartUnitPrice = (index) => {
+        const item = cartItems[index];
+        if (item.unitPrice === '' || isNaN(item.unitPrice)) {
+            handleResetCartUnitPrice(index);
+        }
+    };
+
+    const handleResetCartUnitPrice = (index) => {
+        const updatedItems = [...cartItems];
+        const item = updatedItems[index];
+        const product = products.find(p => p.id === item.productId);
+        if (!product) return;
+
+        const priceInfo = getProductPriceInfo(product, item.quantity);
+        updatedItems[index] = {
+            ...item,
+            unitPrice: priceInfo.finalUnitPrice,
+            basePrice: priceInfo.basePrice,
+            isCustomPrice: false,
+            discount: priceInfo.discount ? (priceInfo.basePrice - priceInfo.finalUnitPrice) : null,
+            total: item.quantity * priceInfo.finalUnitPrice
+        };
+        setCartItems(updatedItems);
+        toast.info(`Precio restablecido a $${priceInfo.finalUnitPrice.toLocaleString()}`);
     };
 
     // Parser seguro para montos ingresados (soporta puntos como miles o comas como decimales)
@@ -352,6 +415,12 @@ export default function VentaRapidaPage() {
     const handleCompleteQuickSale = async () => {
         if (cartItems.length === 0) {
             toast.warning('Agrega al menos un producto al carrito para guardar la venta');
+            return;
+        }
+
+        const hasInvalidPrice = cartItems.some(item => item.unitPrice === '' || isNaN(item.unitPrice) || Number(item.unitPrice) < 0);
+        if (hasInvalidPrice) {
+            toast.warning('Por favor verifique que todos los productos tengan un precio válido mayor o igual a 0');
             return;
         }
 
@@ -768,16 +837,59 @@ export default function VentaRapidaPage() {
                         ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                 {cartItems.map((item, index) => (
-                                    <div key={index} style={{ background: 'var(--bg-hover)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ flex: '1' }}>
-                                            <div style={{ fontWeight: '600', fontSize: '0.85rem' }}>{item.productName}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                                ${item.unitPrice.toLocaleString()} c/u
+                                    <div key={index} style={{ background: 'var(--bg-hover)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                                        <div style={{ flex: '1', minWidth: 0 }}>
+                                            <div style={{ fontWeight: '600', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={item.productName}>
+                                                {item.productName}
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-secondary)' }}>$</span>
+                                                <input
+                                                    type="number"
+                                                    step="any"
+                                                    min="0"
+                                                    className="form-control"
+                                                    value={item.unitPrice === 0 ? '0' : item.unitPrice}
+                                                    onChange={(e) => handleUpdateCartUnitPrice(index, e.target.value)}
+                                                    onBlur={() => handleBlurCartUnitPrice(index)}
+                                                    onClick={(e) => e.target.select()}
+                                                    title="Haga clic para modificar el precio unitario"
+                                                    style={{
+                                                        width: '85px',
+                                                        padding: '2px 6px',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: '600',
+                                                        height: '24px',
+                                                        borderRadius: '4px',
+                                                        border: item.isCustomPrice ? '1px solid #f59e0b' : '1px solid var(--border-color)',
+                                                        background: item.isCustomPrice ? 'rgba(245, 158, 11, 0.08)' : 'var(--bg-tertiary)',
+                                                        color: 'var(--text-primary)'
+                                                    }}
+                                                />
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>c/u</span>
+                                                {item.isCustomPrice && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleResetCartUnitPrice(index)}
+                                                        title="Restablecer al precio original"
+                                                        style={{
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            color: '#f59e0b',
+                                                            fontSize: '0.85rem',
+                                                            cursor: 'pointer',
+                                                            padding: '0 2px',
+                                                            lineHeight: 1
+                                                        }}
+                                                    >
+                                                        ↺
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
 
                                         {/* Qty controls */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', margin: '0 0.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', margin: '0 0.25rem' }}>
                                             <button
                                                 className="btn btn-secondary"
                                                 style={{ padding: '0.1rem 0.4rem', fontSize: '0.8rem', minWidth: '24px' }}
